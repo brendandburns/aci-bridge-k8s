@@ -21,12 +21,28 @@ export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcC
                 continue;
             }
             let containers = new Array<Object>();
+            let cPorts = new Array<Object>();
             for (let container of pod.spec.containers) {
                 let ports = new Array<Object>();
-                // TODO: actually read ports here...
-                ports.push({
-                    port: 80
-                });
+                if (container.ports) {
+                    for (let port of container.ports) {
+                        ports.push({
+                            port: port.containerPort
+                        });
+                        cPorts.push({
+                            protocol: port.protocol,
+                            port: port.containerPort
+                        });
+                    }
+                } else {
+                    ports.push({
+                        port: 80
+                    });
+                    cPorts.push({
+                        protocol: 'TCP',
+                        port: 80
+                    });
+                }
                 containers.push(
                     {
                         name: container.name,
@@ -37,24 +53,18 @@ export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcC
                     }
                 );
             }
-            let ports = new Array<Object>();
-            ports.push({
-                protocol: 'TCP',
-                port: 80
-            });
-            let tags = {
-                "orchestrator": "kubernetes"
-            };
             let group = {
                 properties: {
                     osType: "linux",
                     containers: containers,
                     ipAddress: {
                         type: "Public",
-                        ports: ports
+                        ports: cPorts
                     }
                 },
-                tags: tags,
+                tags: {
+                    "orchestrator": "kubernetes"
+                },
                 location: "westus"
             }
             await rsrcClient.resources.createOrUpdate("bburns-test",

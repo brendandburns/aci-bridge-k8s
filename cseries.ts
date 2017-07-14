@@ -1,5 +1,3 @@
-import shelljs = require('shelljs');
-
 import resource = require('./resource');
 
 export function ListContainerGroups(resourceClient): Promise<Array<Object>> {
