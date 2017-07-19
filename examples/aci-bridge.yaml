@@ -17,3 +17,5 @@ spec:
         value: <required>
       - name: AZURE_SUBSCRIPTION_ID
         value: <required>
+      - name: ACI_RESOURCE_GROUP
+        value: <required>
