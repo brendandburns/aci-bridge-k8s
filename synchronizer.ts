@@ -1,10 +1,10 @@
 import api = require('./typescript/api');
-import cseries = require('./cseries');
+import aci = require('./aci');
 
 export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcClient) {
     try {
         console.log('container scheduler');
-        let groupObj = await cseries.ListContainerGroups(rsrcClient);
+        let groupObj = await aci.ListContainerGroups(rsrcClient);
         let groups = groupObj as Array<Object>;
 
         let groupMembers = {};
@@ -14,7 +14,7 @@ export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcC
 
         let pods = await client.listNamespacedPod('default');
         for (let pod of pods.body.items) {
-            if (pod.spec.nodeName != 'cseries') {
+            if (pod.spec.nodeName != 'aci-bridge') {
                 continue;
             }
             if (groupMembers[pod.metadata.name] != null) {
@@ -67,7 +67,7 @@ export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcC
                 },
                 location: "westus"
             }
-            await rsrcClient.resources.createOrUpdate("bburns-test",
+            await rsrcClient.resources.createOrUpdate("aci-bridge",
                 "Microsoft.Container", "",
                 "containerGroups", pod.metadata.name,
                 '2017-04-01-preview', group, (err, result, request, response) => {

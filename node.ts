@@ -1,5 +1,4 @@
 import api = require('./typescript/api');
-import cseries = require('./cseries');
 
 let handleError = (err: Error) => {
     console.log('Error!');
@@ -51,7 +50,7 @@ export async function Update(client: api.Core_v1Api) {
         let result = await client.listNode();
         let found = false;
         for (let item of result.body.items) {
-            if (item.metadata.name == 'cseries') {
+            if (item.metadata.name == 'aci-bridge') {
                 found = true;
                 break;
             }
@@ -84,15 +83,15 @@ export async function Update(client: api.Core_v1Api) {
             apiVersion: "v1",
             kind: "Node",
             metadata: {
-                name: "cseries"
+                name: "aci-bridge"
             } as api.V1ObjectMeta,
             spec: null,
             status: status
         } as api.V1Node;
         if (found) {
-            console.log('found c-series!');
+            console.log('found aci-bridge!');
         } else {
-            console.log('creating c-series');
+            console.log('creating aci-bridge');
 
             await client.createNode(node);
         }

@@ -1,12 +1,12 @@
 import api = require('./typescript/api');
-import cseries = require('./cseries');
+import aci = require('./aci');
 
 import azureResource = require('azure-arm-resource');
 
 export async function ContainerCreator(client: api.Core_v1Api, startDate: Date, rsrcClient: azureResource.ResourceManagementClient) {
     console.log('k8s pod creater/updater');
     try {
-        let groups = await cseries.ListContainerGroups(rsrcClient);
+        let groups = await aci.ListContainerGroups(rsrcClient);
 
         for (let containerGroup of groups) {
             console.log(containerGroup['name']);
@@ -27,7 +27,7 @@ export async function ContainerCreator(client: api.Core_v1Api, startDate: Date, 
                     namespace: 'default'
                 } as api.V1ObjectMeta,
                 spec: {
-                    nodeName: 'cseries'
+                    nodeName: 'aci-bridge'
                 } as api.V1PodSpec,
                 status: {
                     podIP: containerGroup['properties']['ipAddress'] ? containerGroup['properties']['ipAddress']['ip'] : null,

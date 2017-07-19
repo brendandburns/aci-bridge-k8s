@@ -27,19 +27,15 @@ export async function getMatchingResources(client: azureResource.ResourceManagem
                 let arr = [];
                 for (let rsrc of result) {
                     if (rsrc.type == type) {
-                        // Blacklist a stuck container I created a long time ago.
-                        // TODO: Rip this out!!!
-                        if (rsrc.id.indexOf('test2') == -1) {
-                            try {
-                                let obj = await getResource(client, rsrc.id, version);
-                                if (obj != null) {
-                                    arr.push(obj);
-                                }
-                            } catch (Exception) {
-                                console.log(Exception);
-                                reject(Exception);
-                                return;
+                        try {
+                            let obj = await getResource(client, rsrc.id, version);
+                            if (obj != null) {
+                                arr.push(obj);
                             }
+                        } catch (Exception) {
+                            console.log(Exception);
+                            reject(Exception);
+                            return;
                         }
                     }
                 }
