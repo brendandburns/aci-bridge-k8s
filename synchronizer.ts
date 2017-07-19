@@ -1,7 +1,7 @@
 import api = require('./typescript/api');
 import aci = require('./aci');
 
-export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcClient) {
+export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcClient, resourceGroup) {
     try {
         console.log('container scheduler');
         let groupObj = await aci.ListContainerGroups(rsrcClient);
@@ -67,7 +67,7 @@ export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcC
                 },
                 location: "westus"
             }
-            await rsrcClient.resources.createOrUpdate("aci-bridge",
+            await rsrcClient.resources.createOrUpdate(resourceGroup,
                 "Microsoft.Container", "",
                 "containerGroups", pod.metadata.name,
                 '2017-04-01-preview', group, (err, result, request, response) => {
@@ -82,6 +82,6 @@ export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcC
         console.log(Exception);
     }
     setTimeout(() => {
-        Synchronize(client, startTime, rsrcClient);
+        Synchronize(client, startTime, rsrcClient, resourceGroup);
     }, 5000);
 };

@@ -15,8 +15,9 @@ let client = process.env.AZURE_CLIENT_ID;
 let key = process.env.AZURE_CLIENT_KEY;
 let tenant = process.env.AZURE_TENANT_ID;
 let subscriptionId = process.env.AZURE_SUBSCRIPTION_ID;
+let resourceGroup = process.env.ACI_RESOURCE_GROUP;
 
-for (let key of ['AZURE_CLIENT_ID', 'AZURE_CLIENT_KEY', 'AZURE_TENANT_ID', 'AZURE_SUBSCRIPTION_ID']) {
+for (let key of ['AZURE_CLIENT_ID', 'AZURE_CLIENT_KEY', 'AZURE_TENANT_ID', 'AZURE_SUBSCRIPTION_ID', 'ACI_RESOURCE_GROUP']) {
     if (!process.env[key]) {
         console.log('${' + key + '} is required');
     }
@@ -35,4 +36,4 @@ let k8sApi = config.Config.defaultClient();
 node.Update(k8sApi);
 creator.ContainerCreator(k8sApi, new Date(), resourceClient);
 deleter.ContainerDeleter(k8sApi, resourceClient);
-synchronizer.Synchronize(k8sApi, new Date(), resourceClient);
+synchronizer.Synchronize(k8sApi, new Date(), resourceClient, resourceGroup);
