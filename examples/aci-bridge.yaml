@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: aci-bridge
+  namespace: default
+spec:
+  containers:
+  - name: aci-bridge
+    image: gabrtv.azurecr.io/azure/aci-bridge-k8s:latest
+    imagePullPolicy: Always
+    env:
+      - name: AZURE_CLIENT_ID
+        value: <required>
+      - name: AZURE_CLIENT_KEY
+        value: <required>
+      - name: AZURE_TENANT_ID
+        value: <required>
+      - name: AZURE_SUBSCRIPTION_ID
+        value: <required>
