@@ -1,0 +1,41 @@
+{
+  "name": "aci-bridge-k8s",
+  "version": "0.1.0",
+  "description": "ACI Bridge for Kubernetes",
+  "main": "bridge.js",
+  "dependencies": {
+    "@types/es6-shim": "^0.31.34",
+    "Buffer": "^0.0.0",
+    "azure": "^2.0.0-preview",
+    "azure-arm-resource": "^2.0.0-preview",
+    "base-64": "^0.1.0",
+    "bluebird": "^3.5.0",
+    "fs": "^0.0.1-security",
+    "js-yaml": "^3.9.0",
+    "jsonpath": "^0.2.12",
+    "ms-rest-azure": "^2.2.3",
+    "os": "^0.1.1",
+    "path": "^0.12.7",
+    "process": "^0.11.10",
+    "request": "^2.81.0",
+    "require": "^2.4.20",
+    "shelljs": "^0.7.8",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://bburns-personal@bburns-personal.visualstudio.com:22/_git/aci-bridge"
+  },
+  "keywords": [
+    "aci",
+    "kubernetes",
+    "docker",
+    "containers"
+  ],
+  "author": "Brendan Burns",
+  "license": "MIT"
+}
