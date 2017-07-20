@@ -5,9 +5,12 @@ let handleError = (err: Error) => {
     console.log(err);
 };
 
-let updateNode = async (name: string, transition: Date, client: api.Core_v1Api) => {
+let updateNode = async (name: string, transition: Date, client: api.Core_v1Api, keepRunning: () => boolean) => {
     console.log("sending update.");
     try {
+        if (!keepRunning()) {
+		return;
+	}
         let result = await client.readNode(name);
         let node = result.body as api.V1Node;
         let conditions = [
@@ -41,11 +44,11 @@ let updateNode = async (name: string, transition: Date, client: api.Core_v1Api) 
         console.log(Exception);
     }
     setTimeout(() => {
-        updateNode(name, transition, client);
+        updateNode(name, transition, client, keepRunning);
     }, 5000);
 };
 
-export async function Update(client: api.Core_v1Api) {
+export async function Update(client: api.Core_v1Api, keepRunning: () => boolean) {
     try {
         let result = await client.listNode();
         let found = false;
@@ -96,7 +99,7 @@ export async function Update(client: api.Core_v1Api) {
             await client.createNode(node);
         }
         setTimeout(() => {
-            updateNode(node.metadata.name, transition, client);
+            updateNode(node.metadata.name, transition, client, keepRunning);
         }, 5000);
     } catch (Exception) {
         console.log(Exception);

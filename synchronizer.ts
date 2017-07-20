@@ -1,9 +1,13 @@
 import api = require('./typescript/api');
 import aci = require('./aci');
+import azureResource = require('azure-arm-resource');
 
-export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcClient, resourceGroup) {
+export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcClient: azureResource.ResourceManagementClient, resourceGroup: string, keepRunning: () => boolean) {
+    console.log('container scheduler');
     try {
-        console.log('container scheduler');
+        if (!keepRunning()) {
+            return;
+        }
         let groupObj = await aci.ListContainerGroups(rsrcClient);
         let groups = groupObj as Array<Object>;
 
@@ -82,6 +86,6 @@ export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcC
         console.log(Exception);
     }
     setTimeout(() => {
-        Synchronize(client, startTime, rsrcClient, resourceGroup);
+        Synchronize(client, startTime, rsrcClient, resourceGroup, keepRunning);
     }, 5000);
 };

@@ -33,7 +33,12 @@ let credentials = new msRestAzure.ApplicationTokenCredentials(client, tenant, ke
 let resourceClient = new azureResource.ResourceManagementClient(credentials, subscriptionId);
 let k8sApi = config.Config.defaultClient();
 
-node.Update(k8sApi);
-creator.ContainerCreator(k8sApi, new Date(), resourceClient);
-deleter.ContainerDeleter(k8sApi, resourceClient);
-synchronizer.Synchronize(k8sApi, new Date(), resourceClient, resourceGroup);
+var running = true;
+process.on('SIGINT', () => { running = false; });
+
+var keepRunning = () => { return running; }
+
+node.Update(k8sApi, keepRunning);
+creator.ContainerCreator(k8sApi, new Date(), resourceClient, keepRunning);
+deleter.ContainerDeleter(k8sApi, resourceClient, keepRunning);
+synchronizer.Synchronize(k8sApi, new Date(), resourceClient, resourceGroup, keepRunning);

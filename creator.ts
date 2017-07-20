@@ -3,9 +3,12 @@ import aci = require('./aci');
 
 import azureResource = require('azure-arm-resource');
 
-export async function ContainerCreator(client: api.Core_v1Api, startDate: Date, rsrcClient: azureResource.ResourceManagementClient) {
+export async function ContainerCreator(client: api.Core_v1Api, startDate: Date, rsrcClient: azureResource.ResourceManagementClient, keepRunning: () => boolean) {
     console.log('k8s pod creater/updater');
     try {
+        if (!keepRunning()) {
+		return;
+	}
         let groups = await aci.ListContainerGroups(rsrcClient);
 
         for (let containerGroup of groups) {
@@ -90,6 +93,6 @@ export async function ContainerCreator(client: api.Core_v1Api, startDate: Date, 
         console.log(Exception);
     }
     setTimeout(() => {
-        ContainerCreator(client, startDate, rsrcClient);
+        ContainerCreator(client, startDate, rsrcClient, keepRunning);
     }, 5000);
 }
