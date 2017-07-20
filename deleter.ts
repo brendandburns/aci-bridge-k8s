@@ -3,9 +3,12 @@ import aci = require('./aci');
 
 import azureResource = require('azure-arm-resource');
 
-export async function ContainerDeleter(client: api.Core_v1Api, rsrcClient: azureResource.ResourceManagementClient) {
+export async function ContainerDeleter(client: api.Core_v1Api, rsrcClient: azureResource.ResourceManagementClient, keepRunning: () => boolean) {
     console.log('container deleter');
     try {
+        if (!keepRunning()) {
+	    return;
+        }
         let groups = await aci.ListContainerGroups(rsrcClient);
 
         let groupMembers = {};
@@ -33,6 +36,6 @@ export async function ContainerDeleter(client: api.Core_v1Api, rsrcClient: azure
     }
 
     setTimeout(() => {
-        ContainerDeleter(client, rsrcClient);
+        ContainerDeleter(client, rsrcClient, keepRunning);
     }, 1000);
 }
