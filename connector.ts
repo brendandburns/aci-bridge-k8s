@@ -58,7 +58,7 @@ let main = async () => {
     }
 
     let running = true;
-    process.on('SIGINT', () => {
+    process.on('SIGTERM', () => {
         console.log('Exiting...');
         running = false;
         // We should really exit via other means before this, but if that fails, kill it hard.
