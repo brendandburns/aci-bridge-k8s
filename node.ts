@@ -34,10 +34,19 @@ let updateNode = async (name: string, transition: Date, client: api.Core_v1Api, 
         node.metadata.resourceVersion = null;
         node.status = {
             nodeInfo: {
-                kubeletVersion: "1.6.6"
+                kubeletVersion: "1.6.6",
+                architecture: "amd64"
             } as api.V1NodeSystemInfo,
-            conditions: conditions
+            conditions: conditions,
+            addresses: [] as Array<api.V1NodeAddress>
         } as api.V1NodeStatus;
+        node.status.allocatable = {
+            "cpu": "20",
+            "memory": "100Gi",
+            "pods": "20"
+        };
+        // TODO: Count quota here...
+        node.status.capacity = node.status.allocatable;
 
         await client.replaceNodeStatus(node.metadata.name, node);
     } catch (Exception) {
@@ -88,7 +97,14 @@ export async function Update(client: api.Core_v1Api, keepRunning: () => boolean)
             metadata: {
                 name: "aci-bridge"
             } as api.V1ObjectMeta,
-            spec: null,
+            spec: {
+                taints: [
+                    {
+                       key: "azure.com/aci",
+                       effect: "NoSchedule"
+                    } as api.V1Taint
+                ] as Array<api.V1Taint>
+            } as api.V1NodeSpec,
             status: status
         } as api.V1Node;
         if (found) {

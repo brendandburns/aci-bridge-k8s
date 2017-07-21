@@ -116,6 +116,35 @@ nginx        1/1       Running   0          31s       13.88.27.150   aci-bridge
 
 Note the pod is scheduled on the `aci-bridge` node.  It should now be accessible at the public IP listed.
 
+
+### Using the Kubernetes scheduler
+The example in [nginx-pod](examples/nginx-pod.yaml) hard codes the node name,
+but you can also use the Kubernetes scheduler.
+
+The virtual `aci` node, has a taint (`azure.com/aci`) with a default effect
+of `NoSchedule`. This means that by default Pods will not schedule onto
+the `aci` node unless they are explicitly placed there.
+
+However, if you create a Pod that _tolerates_ this taint, it can be scheduled
+to the `aci` node by the Kubernetes scheduler.
+
+Here is an [example](examples/nginx-pod-toleration.yaml) of Pod with this
+toleration.
+
+To use this Pod, you can simply:
+
+```sh
+$ kubectl create -f examples/nginx-pod-toleration.yaml
+```
+
+Note that if you have other nodes in your cluster then this Pod may not
+necessarily schedule onto the Azure Container Instances.
+
+To force a Pod onto Azure Container Instances, you can either explicitly
+specify the NodeName as in the first example, or you can delete all of the
+other nodes in your cluster using `kubectl delete nodes <node-name>`. A third option is to fill your cluster with other workloads, then the scheduler will
+be obligated to schedule work to the Azure Container Instance API.
+
 ## Development Instructions
 
 ### Local Development
