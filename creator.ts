@@ -30,7 +30,7 @@ export async function ContainerCreator(client: api.Core_v1Api, startDate: Date, 
                     namespace: 'default'
                 } as api.V1ObjectMeta,
                 spec: {
-                    nodeName: 'aci-bridge'
+                    nodeName: 'aci-connector'
                 } as api.V1PodSpec,
                 status: {
                     podIP: containerGroup['properties']['ipAddress'] ? containerGroup['properties']['ipAddress']['ip'] : null,

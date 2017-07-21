@@ -9,4 +9,4 @@ spec:
     imagePullPolicy: Always
     name: nginx
   dnsPolicy: ClusterFirst
-  nodeName: aci-bridge
+  nodeName: aci-connector

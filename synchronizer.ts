@@ -18,7 +18,7 @@ export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcC
 
         let pods = await client.listNamespacedPod('default');
         for (let pod of pods.body.items) {
-            if (pod.spec.nodeName != 'aci-bridge') {
+            if (pod.spec.nodeName != 'aci-connector') {
                 continue;
             }
             if (groupMembers[pod.metadata.name] != null) {

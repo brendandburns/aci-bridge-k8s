@@ -62,7 +62,7 @@ export async function Update(client: api.Core_v1Api, keepRunning: () => boolean)
         let result = await client.listNode();
         let found = false;
         for (let item of result.body.items) {
-            if (item.metadata.name == 'aci-bridge') {
+            if (item.metadata.name == 'aci-connector') {
                 found = true;
                 break;
             }
@@ -95,7 +95,7 @@ export async function Update(client: api.Core_v1Api, keepRunning: () => boolean)
             apiVersion: "v1",
             kind: "Node",
             metadata: {
-                name: "aci-bridge"
+                name: "aci-connector"
             } as api.V1ObjectMeta,
             spec: {
                 taints: [
@@ -108,9 +108,9 @@ export async function Update(client: api.Core_v1Api, keepRunning: () => boolean)
             status: status
         } as api.V1Node;
         if (found) {
-            console.log('found aci-bridge!');
+            console.log('found aci-connector!');
         } else {
-            console.log('creating aci-bridge');
+            console.log('creating aci-connector');
 
             await client.createNode(node);
         }
