@@ -18,7 +18,7 @@ export async function ContainerDeleter(client: api.Core_v1Api, rsrcClient: azure
 
         let pods = await client.listNamespacedPod("default");
         for (let pod of pods.body.items) {
-            if (pod.spec.nodeName != "aci-bridge") {
+            if (pod.spec.nodeName != "aci-connector") {
                 continue;
             }
             if (pod.metadata.deletionTimestamp != null) {
@@ -26,7 +26,7 @@ export async function ContainerDeleter(client: api.Core_v1Api, rsrcClient: azure
                 if (group == null) {
                     client.deleteNamespacedPod(pod.metadata.name, 'default', { gracePeriodSeconds: 0 } as api.V1DeleteOptions, "false", 0, true);
                 } else {
-                    console.log('deleting aci-bridge');
+                    console.log('deleting aci-connector');
                     aci.DeleteContainerGroup(group.id, rsrcClient);
                 }
             }

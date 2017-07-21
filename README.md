@@ -1,20 +1,19 @@
-# ACI Bridge for Kubernetes (experimental)
+# Azure Container Instances Connector for Kubernetes (experimental)
 
-ACI Bridge for Kubernetes is an open-source connector that enables Kubernetes clusters to deploy Azure Container Instances.
+The Azure Container Instances Connector for Kubernetes allows Kubernetes clusters to deploy Azure Container Instances.
 
-This enables on-demand and nearly instantaneous container compute, orchestrated by Kubernetes, without having VM infrastructure to manage and while still leveraging the portable Kubernetes API. This will allow you to utilize both VMs and container instances simultaneously in the same K8s cluster, giving you the best of both worlds.
+This enables on-demand and nearly instantaneous container compute, orchestrated by Kubernetes, without having VM infrastructure to manage and while still leveraging the portable Kubernetes API. This will allow you to utilize both VMs and container instances simultaneously in the same Kubernetes cluster, giving you the best of both worlds.
 
 Please note this software is experimental and should not be used for anything resembling a production workload.
 
 ## How does it Work
 
-The ACI Bridge roughly mimics the [Kubelet](https://kubernetes.io/docs/admin/kubelet/) interface by:
+The ACI Connector roughly mimics the [Kubelet](https://kubernetes.io/docs/admin/kubelet/) interface by:
 
 - Registering into the Kubernetes data plane as a `Node` with unlimited capacity
 - Dispatching scheduled `Pods` to Azure Container Instances instead of a VM-based container engine
 
-Once the bridge is registered as a node called `aci-bridge`, you can use `nodeName: aci-bridge` in 
-your Pod spec run the Pod via ACI.  Pods without this node selector will continue to be scheduled normally.
+Once the connector is registered as a node named `aci-connector`, you can use `nodeName: aci-connector` in your Pod spec run the Pod via Azure Container Instances.  Pods without this node name will continue to be scheduled normally.  See below for instructions on how to use use the ACI Connector with the Kubernetes scheduler [via taints and tolerations](#using-the-kubernetes-scheduler).
 
 ## Requirements
 
@@ -23,9 +22,9 @@ your Pod spec run the Pod via ACI.  Pods without this node selector will continu
 
 ## Quickstart
 
-1. Edit `examples/aci-bridge.yaml` and supply environment variables
-2. Run the ACI Bridge with `kubectl create -f examples/aci-bridge.yaml`
-3. Wait for `kubectl get nodes` to display the `aci-bridge` node
+1. Edit `examples/aci-connector.yaml` and supply environment variables
+2. Run the ACI Connector with `kubectl create -f examples/aci-connector.yaml`
+3. Wait for `kubectl get nodes` to display the `aci-connector` node
 4. Run an NGINX pod via ACI using `kubectl create -f examples/nginx-pod.yaml`
 5. Access the NGINX pod via its public address
 
@@ -33,8 +32,7 @@ your Pod spec run the Pod via ACI.  Pods without this node selector will continu
 
 ### Create a Service Principal
 
-A service principal is required to allow the ACI Bridge to create resources in your Azure subscription.
-You can create one using the `az` CLI using the instructions below.
+A service principal is required to allow the ACI Connector to create resources in your Azure subscription.  You can create one using the `az` CLI using the instructions below.
 
 Find your `subscriptionId` with the `az` CLI:
 
@@ -58,17 +56,16 @@ $ az ad sp create-for-rbac --role=Contributor --scopes /subscriptions/<subscript
 }
 ```
 
-Edit the `examples/aci-bridge.yaml` and input environment variables using the values above:
+Edit the `examples/aci-connector.yaml` and input environment variables using the values above:
 
-- AZURE_CLIENT_ID: <appId>
-- AZURE_CLIENT_KEY: <password>
-- AZURE_TENANT_ID: <tenant>
-- AZURE_SUBSCRIPTION_ID: <subscriptionId>
+- AZURE_CLIENT_ID: insert `appId`
+- AZURE_CLIENT_KEY: insert `password`
+- AZURE_TENANT_ID: insert `tenant`
+- AZURE_SUBSCRIPTION_ID: insert `subscriptionId`
 
 ### Create a Resource Group
 
-The ACI Bridge will create each container instance in a specified resource group.
-You can create a new resource group with:
+The ACI Connector will create each container instance in a specified resource group.  You can create a new resource group with:
 
 ```console
 $ az group create -n aci-test -l westus
@@ -84,18 +81,17 @@ $ az group create -n aci-test -l westus
 }
 ```
 
-Edit the `examples/aci-bridge.yaml` and put the name of the resource group into the `ACI_RESOURCE_GROUP`
-environment variable.
+Edit the `examples/aci-connector.yaml` and put the name of the resource group into the `ACI_RESOURCE_GROUP` environment variable.
 
-### Install the ACI Bridge
+### Install the ACI Connector
 
 ```console
-$ kubectl create -f examples/aci-bridge.yaml 
-pod "aci-bridge" created
+$ kubectl create -f examples/aci-connector.yaml 
+pod "aci-connector" created
 
 $ kubectl get nodes -w
 NAME                        STATUS                     AGE       VERSION
-aci-bridge                  Ready                      3s        1.6.6
+aci-connector               Ready                      3s        1.6.6
 k8s-agentpool1-31868821-0   Ready                      5d        v1.7.0
 k8s-agentpool1-31868821-1   Ready                      5d        v1.7.0
 k8s-agentpool1-31868821-2   Ready                      5d        v1.7.0
@@ -109,17 +105,17 @@ $ kubectl create -f examples/nginx-pod.yaml
 pod "nginx" created
 
 $ kubectl get po -w -o wide
-NAME         READY     STATUS    RESTARTS   AGE       IP             NODE
-aci-bridge   1/1       Running   0          44s       10.244.2.21    k8s-agentpool1-31868821-2
-nginx        1/1       Running   0          31s       13.88.27.150   aci-bridge
+NAME          READY     STATUS    RESTARTS   AGE       IP             NODE
+aci-connector 1/1       Running   0          44s       10.244.2.21    k8s-agentpool1-31868821-2
+nginx         1/1       Running   0          31s       13.88.27.150   aci-connector
 ```
 
-Note the pod is scheduled on the `aci-bridge` node.  It should now be accessible at the public IP listed.
+Note the pod is scheduled on the `aci-connector` node.  It should now be accessible at the public IP listed.
 
 
 ### Using the Kubernetes scheduler
-The example in [nginx-pod](examples/nginx-pod.yaml) hard codes the node name,
-but you can also use the Kubernetes scheduler.
+
+The example in [nginx-pod](examples/nginx-pod.yaml) hard codes the node name, but you can also use the Kubernetes scheduler.
 
 The virtual `aci` node, has a taint (`azure.com/aci`) with a default effect
 of `NoSchedule`. This means that by default Pods will not schedule onto
@@ -140,10 +136,7 @@ $ kubectl create -f examples/nginx-pod-toleration.yaml
 Note that if you have other nodes in your cluster then this Pod may not
 necessarily schedule onto the Azure Container Instances.
 
-To force a Pod onto Azure Container Instances, you can either explicitly
-specify the NodeName as in the first example, or you can delete all of the
-other nodes in your cluster using `kubectl delete nodes <node-name>`. A third option is to fill your cluster with other workloads, then the scheduler will
-be obligated to schedule work to the Azure Container Instance API.
+To force a Pod onto Azure Container Instances, you can either explicitly specify the NodeName as in the first example, or you can delete all of the other nodes in your cluster using `kubectl delete nodes <node-name>`. A third option is to fill your cluster with other workloads, then the scheduler will be obligated to schedule work to the Azure Container Instance API.
 
 ## Development Instructions
 
@@ -153,8 +146,7 @@ be obligated to schedule work to the Azure Container Instance API.
 <edit source>
 $ make clean
 $ make build
-$ tsc bridge.ts
-$ node bridge.js
+$ node connector.js
 ```
 
 ### Docker Development
@@ -165,7 +157,7 @@ docker tag <local-image> <remote-image>
 docker push <remote-image>
 ```
 
-Then edit `examples/aci-bridge.yaml` to point to the `remote-image`.
+Then edit `examples/aci-connector.yaml` to point to the `remote-image`.
 
 # Contributing
 

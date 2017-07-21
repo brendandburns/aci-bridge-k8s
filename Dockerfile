@@ -21,6 +21,6 @@ RUN mkdir -p /app && cp -a /tmp/node_modules /app/node_modules
 WORKDIR /app
 COPY . /app
 
-RUN tsc --target es5 bridge.ts
+RUN tsc --target es5 connector.ts
 
-CMD ["node", "bridge.js"]
+CMD ["node", "connector.js"]
