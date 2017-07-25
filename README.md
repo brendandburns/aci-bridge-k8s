@@ -6,6 +6,8 @@ This enables on-demand and nearly instantaneous container compute, orchestrated 
 
 Please note this software is experimental and should not be used for anything resembling a production workload.
 
+![ACI Connector for Kubernetes GIF](/raw/master/gifs/aci-connector-k8s.gif)
+
 ## How does it Work
 
 The ACI Connector roughly mimics the [Kubelet](https://kubernetes.io/docs/admin/kubelet/) interface by:
@@ -124,7 +126,7 @@ the `aci` node unless they are explicitly placed there.
 However, if you create a Pod that _tolerates_ this taint, it can be scheduled
 to the `aci` node by the Kubernetes scheduler.
 
-Here is an [example](examples/nginx-pod-toleration.yaml) of Pod with this
+Here is an [example](examples/nginx-pod-tolerations.yaml) of Pod with this
 toleration.
 
 To use this Pod, you can simply:
