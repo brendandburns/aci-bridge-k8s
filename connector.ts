@@ -1,4 +1,4 @@
-import config = require('./typescript/config');
+import config = require('@kubernetes/typescript-node');
 import deleter = require('./deleter');
 import creator = require('./creator');
 import synchronizer = require('./synchronizer');
@@ -30,6 +30,7 @@ let main = async () => {
     let tenant = process.env.AZURE_TENANT_ID;
     let subscriptionId = process.env.AZURE_SUBSCRIPTION_ID;
     let resourceGroup = process.env.ACI_RESOURCE_GROUP;
+    let region = process.env.ACI_REGION;
 
     for (let key of ['AZURE_SUBSCRIPTION_ID', 'ACI_RESOURCE_GROUP']) {
         if (!process.env[key]) {
@@ -39,6 +40,10 @@ let main = async () => {
 
     if (!subscriptionId || !resourceGroup) {
         process.exit(1)
+    }
+    if (!region) {
+       console.log('${ACI_REGION} not specified, defaulting to "westus"');
+       region = 'westus';
     }
 
     let credentials = null;
@@ -72,7 +77,7 @@ let main = async () => {
     node.Update(k8sApi, keepRunning);
     creator.ContainerCreator(k8sApi, new Date(), resourceClient, keepRunning);
     deleter.ContainerDeleter(k8sApi, resourceClient, keepRunning);
-    synchronizer.Synchronize(k8sApi, new Date(), resourceClient, resourceGroup, keepRunning);
+    synchronizer.Synchronize(k8sApi, new Date(), resourceClient, resourceGroup, region, keepRunning);
 }
 
 main();
