@@ -6,7 +6,7 @@ This enables on-demand and nearly instantaneous container compute, orchestrated 
 
 Please note this software is experimental and should not be used for anything resembling a production workload.
 
-![ACI Connector for Kubernetes GIF](/raw/master/gifs/aci-connector-k8s.gif)
+![ACI Connector for Kubernetes GIF](https://github.com/Azure/aci-connector-k8s/blob/master/gifs/aci-connector-k8s.gif)
 
 ## How does it Work
 
