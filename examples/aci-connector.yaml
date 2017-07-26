@@ -6,7 +6,7 @@ metadata:
 spec:
   containers:
   - name: aci-connector
-    image: gabrtv.azurecr.io/azure/aci-connector-k8s:latest
+    image: microsoft/aci-connector-k8s:latest
     imagePullPolicy: Always
     env:
       - name: AZURE_CLIENT_ID
