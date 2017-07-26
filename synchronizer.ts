@@ -74,7 +74,7 @@ export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcC
             await rsrcClient.resources.createOrUpdate(resourceGroup,
                 "Microsoft.ContainerInstance", "",
                 "containerGroups", pod.metadata.name,
-                '2017-04-01-preview', group, (err, result, request, response) => {
+                '2017-08-01-preview', group, (err, result, request, response) => {
                     if (err) {
                         console.log(err);
                     } else {
