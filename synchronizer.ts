@@ -52,7 +52,13 @@ export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcC
                         name: container.name,
                         properties: {
                             ports: ports,
-                            image: container.image
+                            image: container.image,
+                            resources: {
+                                requests: {
+                                    cpu: 1,
+                                    memoryInGB: 1.5
+                                }
+                            }
                         }
                     }
                 );
