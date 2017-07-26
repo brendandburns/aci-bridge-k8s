@@ -11,11 +11,11 @@ import azureResource = require('azure-arm-resource');
 let interactiveCredentials = (): Promise<Object> => {
     let result = new Promise((resolve, reject) => {
         msRestAzure.interactiveLogin((err, credentials) => {
-	    if (err) {
-	        reject(err);
+            if (err) {
+                reject(err);
             } else {
-	        resolve(credentials);
-	    }
+                resolve(credentials);
+            }
         });
     });
     return result;
@@ -42,19 +42,19 @@ let main = async () => {
         process.exit(1)
     }
     if (!region) {
-       console.log('${ACI_REGION} not specified, defaulting to "westus"');
-       region = 'westus';
+        console.log('${ACI_REGION} not specified, defaulting to "westus"');
+        region = 'westus';
     }
 
     let credentials = null;
     if (client || key || tenant) {
         for (let key of ['AZURE_CLIENT_ID', 'AZURE_CLIENT_KEY', 'AZURE_TENANT_ID']) {
-	    if (!process.env[key]) {
+            if (!process.env[key]) {
                 console.log('${' + key + '} is required');
-	    }
+            }
         }
         if (!client || !key || !tenant) {
-	    process.exit(1);
+            process.exit(1);
         }
         let tokenCache = new FileTokenCache(path.resolve(path.join(__dirname, './tokenstore.json')));
         credentials = new msRestAzure.ApplicationTokenCredentials(client, tenant, key, { 'tokenCache': tokenCache });
