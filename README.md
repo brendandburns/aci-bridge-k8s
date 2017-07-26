@@ -13,7 +13,7 @@ The ACI Connector roughly mimics the [Kubelet](https://kubernetes.io/docs/admin/
 - Registering into the Kubernetes data plane as a `Node` with unlimited capacity
 - Dispatching scheduled `Pods` to Azure Container Instances instead of a VM-based container engine
 
-Once the connector is registered as a node named `aci-connector`, you can use `nodeName: aci-connector` in your Pod spec run the Pod via Azure Container Instances.  Pods without this node name will continue to be scheduled normally.  See below for instructions on how to use use the ACI Connector with the Kubernetes scheduler [via taints and tolerations](#using-the-kubernetes-scheduler).
+Once the connector is registered as a node named `aci-connector`, you can use `nodeName: aci-connector` in your Pod spec to run the Pod via Azure Container Instances.  Pods without this node name will continue to be scheduled normally.  See below for instructions on how to use use the ACI Connector with the Kubernetes scheduler [via taints and tolerations](#using-the-kubernetes-scheduler).
 
 ![ACI Connector for Kubernetes GIF](https://github.com/Azure/aci-connector-k8s/blob/master/gifs/aci-connector-k8s.gif)
 
