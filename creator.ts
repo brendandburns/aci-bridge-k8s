@@ -1,4 +1,4 @@
-import api = require('./typescript/api');
+import api = require('@kubernetes/typescript-node');
 import aci = require('./aci');
 
 import azureResource = require('azure-arm-resource');
@@ -20,6 +20,7 @@ export async function ContainerCreator(client: api.Core_v1Api, startDate: Date, 
             try {
                 let pod = await client.readNamespacedPod(containerGroup['name'], "default");
             } catch (Exception) {
+	        // TODO: look for 404 here?
                 console.log(Exception);
                 exists = false;
             }

@@ -1,4 +1,4 @@
-import api = require('./typescript/api');
+import api = require('@kubernetes/typescript-node');
 
 let handleError = (err: Error) => {
     console.log('Error!');

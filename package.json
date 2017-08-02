@@ -5,6 +5,7 @@
   "main": "connector.js",
   "dependencies": {
     "@types/es6-shim": "^0.31.34",
+    "@kubernetes/typescript-node": "^0.1.1",
     "Buffer": "^0.0.0",
     "azure": "^2.0.0-preview",
     "azure-arm-resource": "^2.0.0-preview",

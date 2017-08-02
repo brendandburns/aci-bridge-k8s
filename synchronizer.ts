@@ -1,8 +1,8 @@
-import api = require('./typescript/api');
+import api = require('@kubernetes/typescript-node');
 import aci = require('./aci');
 import azureResource = require('azure-arm-resource');
 
-export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcClient: azureResource.ResourceManagementClient, resourceGroup: string, keepRunning: () => boolean) {
+export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcClient: azureResource.ResourceManagementClient, resourceGroup: string, region: string, keepRunning: () => boolean) {
     console.log('container scheduler');
     try {
         if (!keepRunning()) {
@@ -16,6 +16,7 @@ export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcC
             groupMembers[group['name']] = group;
         }
 
+        // TODO: all namespaces here
         let pods = await client.listNamespacedPod('default');
         for (let pod of pods.body.items) {
             if (pod.spec.nodeName != 'aci-connector') {
@@ -68,6 +69,7 @@ export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcC
                     osType: "linux",
                     containers: containers,
                     ipAddress: {
+		        // TODO: use a tag to make Public IP optional.
                         type: "Public",
                         ports: cPorts
                     }
@@ -75,7 +77,7 @@ export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcC
                 tags: {
                     "orchestrator": "kubernetes"
                 },
-                location: "westus"
+                location: region
             }
             await rsrcClient.resources.createOrUpdate(resourceGroup,
                 "Microsoft.ContainerInstance", "",
@@ -92,6 +94,6 @@ export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcC
         console.log(Exception);
     }
     setTimeout(() => {
-        Synchronize(client, startTime, rsrcClient, resourceGroup, keepRunning);
+        Synchronize(client, startTime, rsrcClient, resourceGroup, region, keepRunning);
     }, 5000);
 };

@@ -1,4 +1,4 @@
-import api = require('./typescript/api');
+import api = require('@kubernetes/typescript-node');
 import aci = require('./aci');
 
 import azureResource = require('azure-arm-resource');
