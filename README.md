@@ -89,7 +89,7 @@ Edit the `examples/aci-connector.yaml` and put the name of the resource group in
 
 ```console
 $ kubectl create -f examples/aci-connector.yaml 
-pod "aci-connector" created
+deployment "aci-connector" created
 
 $ kubectl get nodes -w
 NAME                        STATUS                     AGE       VERSION
@@ -108,7 +108,7 @@ pod "nginx" created
 
 $ kubectl get po -w -o wide
 NAME          READY     STATUS    RESTARTS   AGE       IP             NODE
-aci-connector 1/1       Running   0          44s       10.244.2.21    k8s-agentpool1-31868821-2
+aci-connector-3396840456-v75q2  1/1       Running   0          44s       10.244.2.21    k8s-agentpool1-31868821-2
 nginx         1/1       Running   0          31s       13.88.27.150   aci-connector
 ```
 
