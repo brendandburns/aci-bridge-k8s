@@ -9,5 +9,5 @@ clean:
 	rm *.js
 
 docker-build:
-	docker build -t azure/aci-connector-k8s:latest .
+	docker build -t microsoft/aci-connector-k8s:latest .
 
