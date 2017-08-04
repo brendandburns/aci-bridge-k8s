@@ -32,39 +32,6 @@ Once the connector is registered as a node named `aci-connector`, you can use `n
 
 ## Usage
 
-### Create a Service Principal
-
-A service principal is required to allow the ACI Connector to create resources in your Azure subscription.  You can create one using the `az` CLI using the instructions below.
-
-Find your `subscriptionId` with the `az` CLI:
-
-```console
-$ az account list -o table
-Name                                             CloudName    SubscriptionId                        State    IsDefault
------------------------------------------------  -----------  ------------------------------------  -------  -----------
-Pay-As-You-Go                                    AzureCloud   12345678-9012-3456-7890-123456789012  Enabled  True
-```
-
-Use `az` to create a Service Principal that can perform operations on your subscription:
-
-```console
-$ az ad sp create-for-rbac --role=Contributor --scopes /subscriptions/<subscription-id>
-{
-  "appId": "<redacted>",
-  "displayName": "azure-cli-2017-07-19-19-13-19",
-  "name": "http://azure-cli-2017-07-19-19-13-19",
-  "password": "<redacted>",
-  "tenant": "<redacted>"
-}
-```
-
-Edit the `examples/aci-connector.yaml` and input environment variables using the values above:
-
-- AZURE_CLIENT_ID: insert `appId`
-- AZURE_CLIENT_KEY: insert `password`
-- AZURE_TENANT_ID: insert `tenant`
-- AZURE_SUBSCRIPTION_ID: insert `subscriptionId`
-
 ### Create a Resource Group
 
 The ACI Connector will create each container instance in a specified resource group.  You can create a new resource group with:
@@ -84,6 +51,39 @@ $ az group create -n aci-test -l westus
 ```
 
 Edit the `examples/aci-connector.yaml` and put the name of the resource group into the `ACI_RESOURCE_GROUP` environment variable.
+
+### Create a Service Principal
+
+A service principal is required to allow the ACI Connector to create resources in your Azure subscription.  You can create one using the `az` CLI using the instructions below.
+
+Find your `subscriptionId` with the `az` CLI:
+
+```console
+$ az account list -o table
+Name                                             CloudName    SubscriptionId                        State    IsDefault
+-----------------------------------------------  -----------  ------------------------------------  -------  -----------
+Pay-As-You-Go                                    AzureCloud   12345678-9012-3456-7890-123456789012  Enabled  True
+```
+
+Use `az` to create a Service Principal that can perform operations on your resource group:
+
+```console
+$ az ad sp create-for-rbac --role=Contributor --scopes /subscriptions/<subscriptionId>/resourceGroups/aci-test
+{
+  "appId": "<redacted>",
+  "displayName": "azure-cli-2017-07-19-19-13-19",
+  "name": "http://azure-cli-2017-07-19-19-13-19",
+  "password": "<redacted>",
+  "tenant": "<redacted>"
+}
+```
+
+Edit the `examples/aci-connector.yaml` and input environment variables using the values above:
+
+- AZURE_CLIENT_ID: insert `appId`
+- AZURE_CLIENT_KEY: insert `password`
+- AZURE_TENANT_ID: insert `tenant`
+- AZURE_SUBSCRIPTION_ID: insert `subscriptionId`
 
 ### Install the ACI Connector
 
