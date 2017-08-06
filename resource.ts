@@ -23,6 +23,7 @@ export async function getMatchingResources(client: azureResource.ResourceManagem
         client.resources.list(async function (err, result, request, response) {
             if (err) {
                 console.log(err);
+                reject(err);
             } else {
                 let arr = [];
                 for (let rsrc of result) {
