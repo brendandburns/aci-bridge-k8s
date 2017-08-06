@@ -34,7 +34,7 @@ let updateNode = async (name: string, transition: Date, client: api.Core_v1Api, 
         node.metadata.resourceVersion = null;
         node.status = {
             nodeInfo: {
-                kubeletVersion: "1.6.6",
+                kubeletVersion: "v1.6.6",
                 architecture: "amd64"
             } as api.V1NodeSystemInfo,
             conditions: conditions,
