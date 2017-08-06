@@ -22,7 +22,6 @@ export async function getMatchingResources(client: azureResource.ResourceManagem
     let result = new Promise<Array<Object>>((resolve, reject) => {
         client.resources.list(async function (err, result, request, response) {
             if (err) {
-                console.log(err);
                 reject(err);
             } else {
                 let arr = [];
