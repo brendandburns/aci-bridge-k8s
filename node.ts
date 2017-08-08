@@ -5,7 +5,7 @@ let handleError = (err: Error) => {
     console.log(err);
 };
 
-let updateNode = async (name: string, transition: Date, client: api.Core_v1Api, keepRunning: () => boolean) => {
+let updateNode = async (name: string, transition: Date, client: api.Core_v1Api, operatingSystem: string, keepRunning: () => boolean) => {
     console.log("sending update.");
     try {
         if (!keepRunning()) {
@@ -35,7 +35,8 @@ let updateNode = async (name: string, transition: Date, client: api.Core_v1Api, 
         node.status = {
             nodeInfo: {
                 kubeletVersion: "v1.6.6",
-                architecture: "amd64"
+                architecture: "amd64",
+                operatingSystem: operatingSystem
             } as api.V1NodeSystemInfo,
             conditions: conditions,
             addresses: [] as Array<api.V1NodeAddress>
@@ -53,16 +54,17 @@ let updateNode = async (name: string, transition: Date, client: api.Core_v1Api, 
         console.log(Exception);
     }
     setTimeout(() => {
-        updateNode(name, transition, client, keepRunning);
+        updateNode(name, transition, client, operatingSystem, keepRunning);
     }, 5000);
 };
 
-export async function Update(client: api.Core_v1Api, keepRunning: () => boolean) {
+export async function Update(client: api.Core_v1Api, operatingSystem: string, keepRunning: () => boolean) {
+    let name = 'aci-connector-' + operatingSystem;
     try {
         let result = await client.listNode();
         let found = false;
         for (let item of result.body.items) {
-            if (item.metadata.name == 'aci-connector') {
+            if (item.metadata.name == name) {
                 found = true;
                 break;
             }
@@ -88,14 +90,16 @@ export async function Update(client: api.Core_v1Api, keepRunning: () => boolean)
                 } as api.V1NodeCondition
             ] as Array<api.V1NodeCondition>,
             nodeInfo: {
-                kubeletVersion: "1.6.6"
+                kubeletVersion: "v1.6.6",
+                architecture: "amd64",
+                operatingSystem: operatingSystem
             } as api.V1NodeSystemInfo
         } as api.V1NodeStatus;
         let node = {
             apiVersion: "v1",
             kind: "Node",
             metadata: {
-                name: "aci-connector"
+                name: name,
             } as api.V1ObjectMeta,
             spec: {
                 taints: [
@@ -107,15 +111,16 @@ export async function Update(client: api.Core_v1Api, keepRunning: () => boolean)
             } as api.V1NodeSpec,
             status: status
         } as api.V1Node;
+        node.metadata.labels = { "beta.kubernetes.io/os": operatingSystem };
         if (found) {
-            console.log('found aci-connector!');
+            console.log('found aci-connector for ' + operatingSystem);
         } else {
-            console.log('creating aci-connector');
+            console.log('creating aci-connector for ' + operatingSystem);
 
             await client.createNode(node);
         }
         setTimeout(() => {
-            updateNode(node.metadata.name, transition, client, keepRunning);
+            updateNode(node.metadata.name, transition, client, operatingSystem, keepRunning);
         }, 5000);
     } catch (Exception) {
         console.log(Exception);

@@ -2,8 +2,9 @@ import api = require('@kubernetes/typescript-node');
 import aci = require('./aci');
 import azureResource = require('azure-arm-resource');
 
-export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcClient: azureResource.ResourceManagementClient, resourceGroup: string, region: string, keepRunning: () => boolean) {
+export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcClient: azureResource.ResourceManagementClient, resourceGroup: string, region: string, operatingSystem: string, keepRunning: () => boolean) {
     console.log('container scheduler');
+    let name = 'aci-connector-' + operatingSystem;
     try {
         if (!keepRunning()) {
             return;
@@ -19,7 +20,7 @@ export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcC
         // TODO: all namespaces here
         let pods = await client.listNamespacedPod('default');
         for (let pod of pods.body.items) {
-            if (pod.spec.nodeName != 'aci-connector') {
+            if (pod.spec.nodeName != name) {
                 continue;
             }
             if (groupMembers[pod.metadata.name] != null) {
@@ -66,7 +67,7 @@ export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcC
             }
             let group = {
                 properties: {
-                    osType: "linux",
+                    osType: operatingSystem,
                     containers: containers,
                     ipAddress: {
 		        // TODO: use a tag to make Public IP optional.
@@ -94,6 +95,6 @@ export async function Synchronize(client: api.Core_v1Api, startTime: Date, rsrcC
         console.log(Exception);
     }
     setTimeout(() => {
-        Synchronize(client, startTime, rsrcClient, resourceGroup, region, keepRunning);
+        Synchronize(client, startTime, rsrcClient, resourceGroup, region, operatingSystem, keepRunning);
     }, 5000);
 };

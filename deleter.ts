@@ -3,7 +3,7 @@ import aci = require('./aci');
 
 import azureResource = require('azure-arm-resource');
 
-export async function ContainerDeleter(client: api.Core_v1Api, rsrcClient: azureResource.ResourceManagementClient, keepRunning: () => boolean) {
+export async function ContainerDeleter(client: api.Core_v1Api, rsrcClient: azureResource.ResourceManagementClient, operatingSystem: string, keepRunning: () => boolean) {
     console.log('container deleter');
     try {
         if (!keepRunning()) {
@@ -18,7 +18,7 @@ export async function ContainerDeleter(client: api.Core_v1Api, rsrcClient: azure
 
         let pods = await client.listNamespacedPod("default");
         for (let pod of pods.body.items) {
-            if (pod.spec.nodeName != "aci-connector") {
+            if (pod.spec.nodeName != "aci-connector-" + operatingSystem) {
                 continue;
             }
             if (pod.metadata.deletionTimestamp != null) {
@@ -36,6 +36,6 @@ export async function ContainerDeleter(client: api.Core_v1Api, rsrcClient: azure
     }
 
     setTimeout(() => {
-        ContainerDeleter(client, rsrcClient, keepRunning);
+        ContainerDeleter(client, rsrcClient, operatingSystem, keepRunning);
     }, 1000);
 }

@@ -4,6 +4,8 @@ metadata:
   name: nginx
   namespace: default
 spec:
+  nodeSelector:
+    beta.kubernetes.io/os: linux
   containers:
   - image: nginx
     imagePullPolicy: Always
